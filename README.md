@@ -2,7 +2,7 @@
 
 ### [Project Page](https://www.cs.columbia.edu/cg/trust-region/)  | [Paper](https://www.cs.columbia.edu/cg/trust-region/paper.pdf)
 
-<img src="https://github.com/honglin-c/trust-region/blob/main/.github/images/teaser.png" width="800">
+<img src="https://github.com/honglin-c/trust-region-newton/blob/main/.github/images/teaser.png" width="800">
 
 Official implementation for the paper:
 > **[Trust-Region Eigenvalue Filtering for Projected Newton](https://www.cs.columbia.edu/cg/trust-region/)**  
