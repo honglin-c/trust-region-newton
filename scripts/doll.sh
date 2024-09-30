@@ -1,0 +1,1 @@
+./example -n doll -l stretch_twist_top -t 0.5 --ym 1e8 --pr 0.495
