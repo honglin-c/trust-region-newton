@@ -271,12 +271,12 @@ int main(int argc, char** argv)
       
         // switch between clamp or abs depending on whether the trust region ratio is close to 1
         if(eps_str == "adaptive") {
-          if (std::fabs(hist_trust_region_ratio.back() - 1.0) < tr_threshold) {
-            eps = 0.0;
+          eps = (std::fabs(hist_trust_region_ratio.back() - 1.0) < tr_threshold) ? 0.0 : -1;
+
+          if (eps == 0.0) {
             TINYAD_DEBUG_OUT("Switch to clamp");
           }
           else {
-            eps = -1;
             TINYAD_DEBUG_OUT("Switch to abs");
           }
           hist_trust_region_eps.push_back(eps);
