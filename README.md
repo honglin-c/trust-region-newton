@@ -34,28 +34,26 @@ make -j8
 
 ## Examples
 
-To run the code with our absolute eigenvalue projection strategy, please run, e.g.,
+To run the code with our adaptive eigenvalue projection strategy, please run, e.g.,
 ```
-sh ../scripts/micky_teaser/abs.sh
+sh ../scripts/horse.sh
 ```
 We provide several examples in `scripts/`. 
 
 ### Comparisons
-To run the same example with the eigenvalue clamping strategy, run `clamp.sh` under the same folder (or add `--clamp` option after the command in `abs.sh`):
-```
-sh ../scripts/frog.sh
-```
+To run the same example with the eigenvalue clamping strategy, add `--clamp` or `--abs` option after the command in the above scripts.
+
 The default eigenvalue clamping algorithm uses 0 as the clamping threshold. To use a different clamping threshold (e.g., a small positive number), add `--epsilon [threshold]` option after the command. 
 
 ## Experiments
 
 We provide the python scripts to run the experiments in our paper.
-To run the experiment of each figure, please run, e.g.,
+To run one experiment of a specific figure, please run, e.g.,
 ```
-python ../experiments/teaser_frog.py
+python ../experiments/teaser_frog/frog_stretch_large.py
 ```
 
-The python script will iteratively run the example with different eigenvalue filtering strategies, deformation magnitudes and Poisson's ratios. (You'll need to close the libigl window before proceeding to the next configuration. )
+The python script will iteratively run the example with different eigenvalue filtering strategies and Poisson's ratios. 
 
 ## Optional arguments
 
@@ -66,7 +64,7 @@ For more options, please see
 
 <details>
 <summary>
-<h3>What do we modify in TinyAD to add our absolute eigenvalue projection? </h3>
+<h3>What do we modify in TinyAD to add our adaptive eigenvalue projection? </h3>
 </summary>
 
 As a research prototype, we choose to make minimal modifications in TinyAD when adding our new projection method. 
@@ -90,14 +88,11 @@ and comment out and change [lines 71-75](https://github.com/patr-schm/TinyAD/blo
       }
   }
 ```
-Thus we simply use `eps < 0` as a flag for absolute eigenvalue projection.
+Thus we simply use `eps < 0` (e.g., `eps = -1`) as a flag for absolute eigenvalue projection.
+
+For our adaptive eigenvalue projection strategy, we [compute the trust region ratio](https://github.com/honglin-c/trust-region-newton/blob/34f8e4ecaf10a37179aa71483e00fe8a6c7db98d/main.cpp#L316) and [use it as a threshold to switch between the abs and clamp strategy](https://github.com/honglin-c/trust-region-newton/blob/34f8e4ecaf10a37179aa71483e00fe8a6c7db98d/main.cpp#L272-L283).
 
 </details>
-
-<details>
-<summary>
-<h3>Wait, for this specific example, the adaptive method is slightly slower than absolute eigenvalue projection / eigenvalue clamping? </h3>
-</summary>
 
 </details>
 
