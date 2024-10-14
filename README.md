@@ -14,7 +14,7 @@ Official implementation for the paper:
 <br>
 > <sup>1</sup>Columbia University, 
 <sup>2</sup>University of Toronto,  
-<sup>3</sup>Roblox Research, 
+<sup>3</sup>Roblox, 
 <sup>4</sup>University of British Columbia, 
 <br> 
 &nbsp; &nbsp; <sup>5</sup>NVIDIA,
