@@ -49,7 +49,7 @@ The default eigenvalue clamping algorithm uses 0 as the clamping threshold. To u
 
 ## Experiments
 
-We provide the python scripts to run the experiments in our paper.
+We provide the python scripts in `experiments/` to run the experiments in our paper.
 To run one experiment of a specific figure, please run, e.g.,
 ```
 python ../experiments/teaser_frog/frog_stretch_large.py
