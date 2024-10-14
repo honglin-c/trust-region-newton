@@ -2,10 +2,10 @@ import os
 import sys
 
 proj_eps_list = ['-1', '0', '-0.5']
-pr_list = ['0.495']
-deform_scale_list = ['0.8']
+pr_list = ['0.3']
+deform_scale_list = ['0.2']
 
-mesh_name = 'armadillo'
+mesh_name = 'horse'
 experiment_name = 'figure_' + os.path.basename(__file__)[:-3]
 
 for proj_eps in proj_eps_list:
@@ -13,11 +13,9 @@ for proj_eps in proj_eps_list:
     for deform_scale in deform_scale_list:
       try:
         command = './example -p ' + proj_eps +  ' -n ' + mesh_name \
-          + ' -l stretch_shear -g ' + deform_scale \
+          + ' -l stretch_front -g ' + deform_scale \
           + ' --ym 1e8 --pr ' + pr \
-          + ' --experiment_name ' + experiment_name \
-          + ' --tr 0.01' \
-          + ' -b 0.2' 
+          + ' --experiment_name ' + experiment_name 
         print(command)
         os.system(command)
       except:

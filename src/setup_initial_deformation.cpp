@@ -5,6 +5,7 @@ void setup_initial_deformation(const Eigen::MatrixXd V,
                                const std::string pose_label,
                                const double deformation_magnitude,
                                const double deformation_ratio,
+                               const double rotate_ratio,
                                const double fixed_boundary_range,
                                Eigen::MatrixXd &U,
                                std::vector<unsigned int> &indices_fixed)
@@ -242,6 +243,49 @@ void setup_initial_deformation(const Eigen::MatrixXd V,
       U(topmost_vertices[i], 1) += deformation_ratio * x_range;
     }
   }
+  else if (pose_label == "bend_stretch") {
+    // bend along the longest axis by rotating the vertices on one end by 90 degree around the center of the mesh
+    // find the center of the mesh
+    Eigen::Vector3d center = Eigen::Vector3d::Zero();
+    for (int i = 0; i < V.rows(); ++i) {
+      center += V.row(i);
+    }
+    center /= V.rows();
+    // find the longest axis
+    if (x_range > y_range && x_range > z_range) {
+      // rotate the rightmost vertices by 90 degrees around the center of the mesh on the plane between the longest and shortest axis
+      for (int i = 0; i < rightmost_vertices.size(); ++i) {
+        Eigen::Vector3d p = U.row(rightmost_vertices[i]);
+        p -= center;
+        p = Eigen::AngleAxisd(rotate_ratio * M_PI, Eigen::Vector3d::UnitY()) * p;
+        p += center;
+        U.row(rightmost_vertices[i]) = p;
+        U(rightmost_vertices[i], 1) += deformation_ratio * x_range;
+      }
+    }
+    else if (y_range > x_range && y_range > z_range) {
+      // rotate the topmost vertices by 90 degrees around the center of the mesh on the plane between the longest and shortest axis
+      for (int i = 0; i < topmost_vertices.size(); ++i) {
+        Eigen::Vector3d p = U.row(topmost_vertices[i]);
+        p -= center;
+        p = Eigen::AngleAxisd(rotate_ratio * M_PI, Eigen::Vector3d::UnitX()) * p;
+        p += center;
+        U.row(topmost_vertices[i]) = p;
+        U(topmost_vertices[i], 2) += deformation_ratio * y_range;
+      }
+    }
+    else {
+      // rotate the frontmost vertices by 90 degrees around the center of the mesh on the plane between the longest and shortest axis
+      for (int i = 0; i < frontmost_vertices.size(); ++i) {
+        Eigen::Vector3d p = U.row(frontmost_vertices[i]);
+        p -= center;
+        p = Eigen::AngleAxisd(rotate_ratio * M_PI, Eigen::Vector3d::UnitX()) * p;
+        p += center;
+        U.row(frontmost_vertices[i]) = p;
+        U(frontmost_vertices[i], 0) += deformation_ratio * z_range;
+      }
+    }
+  }
 
   if (pose_label == "compress_top" || pose_label == "stretch_top" || pose_label == "stretch_twist_top") {
     indices_fixed.insert(indices_fixed.end(), topmost_vertices.begin(), topmost_vertices.end());
@@ -251,7 +295,7 @@ void setup_initial_deformation(const Eigen::MatrixXd V,
     indices_fixed.insert(indices_fixed.end(), backmost_vertices.begin(), backmost_vertices.end());
     indices_fixed.insert(indices_fixed.end(), frontmost_vertices.begin(), frontmost_vertices.end());
   }
-  else if (pose_label == "compress_longest_axis" || pose_label == "stretch_longest_axis" || pose_label == "stretch_shear_longest_axis") {
+  else if (pose_label == "compress_longest_axis" || pose_label == "stretch_longest_axis" || pose_label == "stretch_shear_longest_axis" || pose_label == "bend_stretch") {
     // fix the two ends of the longest axis
     if (x_range > y_range && x_range > z_range) {
       // x is the longest axis

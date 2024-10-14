@@ -1,7 +1,7 @@
 import os
 
 proj_eps_list = ['-1', '0', '-0.5']
-pr_list = ['0.495',  '0.3']
+pr_list = ['0.3']
 
 mesh_name = 'falconstatue'
 experiment_name = 'figure_' + os.path.basename(__file__)[:-3]

@@ -16,7 +16,7 @@ for pr in pr_list:
         + ' -l ' + deform_label + ' -g ' + deform_scale \
         + ' --ym 1e8 --pr ' + pr \
         + ' --experiment_name ' + experiment_name \
-        + ' --tr 0.01' \
+        + ' --tr 0.1' \
         + ' -b 0.2'
       print(command)
       os.system(command)

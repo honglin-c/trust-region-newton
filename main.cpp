@@ -49,6 +49,7 @@ int main(int argc, char** argv)
     ("pr", "Poisson's ratio (need to set both YM and PR to enable this option, otherwise lambda_mu_ratio is used instead)", cxxopts::value<double>()->default_value("0.495"))
     ("tr", "trust region ratio threshold", cxxopts::value<double>()->default_value("0.01"))
     ("experiment_name", "experiment name", cxxopts::value<std::string>()->default_value(""))
+    ("rotate_ratio", "The ratio of the rotation", cxxopts::value<double>()->default_value("0.5"))
     ("h,help", "show help")
   ;
   
@@ -73,6 +74,7 @@ int main(int argc, char** argv)
   const double PR = result["pr"].as<double>();
   const double tr_threshold = result["tr"].as<double>();
   const std::string experiment_folder = result["experiment_name"].as<std::string>() == "" ? ("figure_" + mesh_name) : result["experiment_name"].as<std::string>();
+  const double rotate_ratio = result["rotate_ratio"].as<double>();
 
   if (clamp || eps == 0) {
       // we use eps = 0 as a flag for clamp projection, see lines 71-78 in our modified `TinyAD/include/TinyAD/Utils/HessianProjection.hh`
@@ -115,8 +117,10 @@ int main(int argc, char** argv)
       std::filesystem::create_directory(output_folder + "trust_region_ratio/");
     if (!std::filesystem::exists(output_folder + "trust_region_eps/"))
       std::filesystem::create_directory(output_folder + "trust_region_eps/");
-    if (!std::filesystem::exists(output_folder + "line_search/"))
-      std::filesystem::create_directory(output_folder + "line_search/");
+    if (!std::filesystem::exists(output_folder + "line_search_alpha/"))
+      std::filesystem::create_directory(output_folder + "line_search_alpha/");
+    if (!std::filesystem::exists(output_folder + "line_search_iter/"))
+      std::filesystem::create_directory(output_folder + "line_search_iter/");
   }
 
   const std::string output_tag = "mesh_" + mesh_name + "_eps_" + eps_str;
@@ -145,6 +149,8 @@ int main(int argc, char** argv)
     TINYAD_DEBUG_OUT("Young's modulus: " << YM);
     TINYAD_DEBUG_OUT("Poisson's ratio: " << PR);
     TINYAD_DEBUG_OUT("Trust region threshold: " << tr_threshold);
+    TINYAD_DEBUG_OUT("Experiment folder: " << experiment_folder);
+    TINYAD_DEBUG_OUT("Rotate ratio: " << rotate_ratio);
   }
 
   Eigen::MatrixXd V, U; // #V-by-3 3D vertex positions
@@ -181,7 +187,7 @@ int main(int argc, char** argv)
   std::vector<unsigned int> indices_fixed;
 
   // set up fixed point constraints and initial deformation
-  setup_initial_deformation(V, F, pose_label, deformation_magnitude, deformation_ratio, fixed_boundary_range, U, indices_fixed);
+  setup_initial_deformation(V, F, pose_label, deformation_magnitude, deformation_ratio, rotate_ratio, fixed_boundary_range, U, indices_fixed);
   fixed_point_constraints(P, 3*V.rows(), 3, indices_fixed);
 
   TINYAD_DEBUG_OUT("Finish setting up fixed point constraints.");
@@ -255,6 +261,8 @@ int main(int argc, char** argv)
       hist_trust_region_ratio.push_back(0.0);
 
       std::vector<double> hist_trust_region_eps;
+      std::vector<double> hist_line_search_alpha;
+      std::vector<int> hist_line_search_iter;
 
       for (int i = 0; i < max_iters; ++i)
       {
@@ -299,6 +307,10 @@ int main(int argc, char** argv)
         Eigen::VectorXd x_prev = x;
         x = TinyAD::line_search(x, d, f, g, func, 1.0, 0.8, 100, 1e-8);
         double alpha = (x - x_prev).norm() / d.norm();
+        hist_line_search_alpha.push_back(alpha);
+
+        int line_search_iter = std::lround(std::log(alpha) / std::log(0.8)) + 1;
+        hist_line_search_iter.push_back(line_search_iter);
 
         // compute the trust region ratio
         double trust_region_ratio = compute_trust_region_ratio(func.eval(x), f, alpha*d, g, H0);
@@ -321,6 +333,7 @@ int main(int argc, char** argv)
       TINYAD_DEBUG_OUT("Final energy: " << func.eval(x));
       hist.push_back(func.eval(x));
 
+      // output all the optimization statistics
       {
         igl::writeOBJ(output_folder + "obj/" + mesh_name + "_" + eps_str + "/" + output_tag + "_iter_" + std::to_string(hist.size()-1) + ".obj", U, FF);
         igl::writeMESH(output_folder + "obj/" + mesh_name + "_" + eps_str + "/" + output_tag + "_iter_" + std::to_string(hist.size()-1) + ".mesh", U, F, FF);
@@ -341,9 +354,21 @@ int main(int argc, char** argv)
         std::ostream_iterator<double> output_iterator_trust_region_eps(output_file_trust_region_eps, "\n");
         std::copy(std::begin(hist_trust_region_eps), std::end(hist_trust_region_eps), output_iterator_trust_region_eps);
 
+        std::ofstream output_file_line_search_alpha(output_folder + "line_search_alpha/" + output_tag + ".txt");
+        std::ostream_iterator<double> output_iterator_line_search_alpha(output_file_line_search_alpha, "\n");
+        std::copy(std::begin(hist_line_search_alpha), std::end(hist_line_search_alpha), output_iterator_line_search_alpha);
+
+        std::ofstream output_file_line_search_iter(output_folder + "line_search_iter/" + output_tag + ".txt");
+        std::ostream_iterator<int> output_iterator_line_search_iter(output_file_line_search_iter, "\n");
+        std::copy(std::begin(hist_line_search_iter), std::end(hist_line_search_iter), output_iterator_line_search_iter);
+
         std::ofstream output_file_iter(output_folder + "iter/" + output_tag + ".txt");
         output_file_iter << (hist.size()-1) << std::endl;
       }
+
+      // comment this out later
+      // close the viewer
+      exit(0);
     });
 
   // Plot mesh

@@ -15,8 +15,8 @@ for proj_eps in proj_eps_list:
         + ' --ym 1e8 --pr ' + pr \
         + ' --experiment_name ' + experiment_name \
         + ' --tr 0.01' \
-        + ' -c 1e-6' \
-        + ' --rotate_ratio 0.3' 
+        + ' -c 4e-7' \
+        + ' --rotate_ratio 0.5' 
       print(command)
       os.system(command)
     except:
