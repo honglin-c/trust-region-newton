@@ -39,7 +39,6 @@ To run the code with our trust-region eigenvalue projection strategy, please run
 sh ../scripts/horse.sh
 ```
 We provide several examples in `scripts/`. 
-
 You can find the results in `results/`.
 
 ### Comparisons
