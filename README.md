@@ -34,14 +34,16 @@ make -j8
 
 ## Examples
 
-To run the code with our adaptive eigenvalue projection strategy, please run, e.g.,
+To run the code with our trust-region eigenvalue projection strategy, please run, e.g.,
 ```
 sh ../scripts/horse.sh
 ```
 We provide several examples in `scripts/`. 
 
+You can find the results in `results/`.
+
 ### Comparisons
-To run the same example with the eigenvalue clamping strategy, add `--clamp` or `--abs` option after the command in the above scripts.
+To run the same example with the eigenvalue clamping strategy (or the absolute eigenvalue projection strategy), add `--clamp` (or `--abs`) option after the command in the above scripts.
 
 The default eigenvalue clamping algorithm uses 0 as the clamping threshold. To use a different clamping threshold (e.g., a small positive number), add `--epsilon [threshold]` option after the command. 
 
@@ -53,7 +55,7 @@ To run one experiment of a specific figure, please run, e.g.,
 python ../experiments/teaser_frog/frog_stretch_large.py
 ```
 
-The python script will iteratively run the example with different eigenvalue filtering strategies and Poisson's ratios. 
+The python script will iteratively run the example with different eigenvalue filtering strategies and Poisson's ratios. You can find the results in `results/`.
 
 ## Optional arguments
 
@@ -64,7 +66,7 @@ For more options, please see
 
 <details>
 <summary>
-<h3>What do we modify in TinyAD to add our adaptive eigenvalue projection? </h3>
+<h3>What do we modify in TinyAD to add our trust-region eigenvalue projection? </h3>
 </summary>
 
 As a research prototype, we choose to make minimal modifications in TinyAD when adding our new projection method. 
