@@ -1,1 +1,1 @@
-./example -n frog -l stretch_shear_front -t 1.5 --ym 1e8 --pr 0.495 --fixed_boundary_range 0.2
+./example -n frog -l stretch_shear_front2 -g -1.5 --ym 1e8 --pr 0.495 --fixed_boundary_range 0.2
