@@ -90,7 +90,7 @@ and comment out and change [lines 71-75](https://github.com/patr-schm/TinyAD/blo
 ```
 Thus we simply use `eps < 0` (e.g., `eps = -1`) as a flag for absolute eigenvalue projection.
 
-For our adaptive eigenvalue projection strategy, we [compute the trust region ratio](https://github.com/honglin-c/trust-region-newton/blob/34f8e4ecaf10a37179aa71483e00fe8a6c7db98d/main.cpp#L316) and [use it as a threshold to switch between the abs and clamp strategy](https://github.com/honglin-c/trust-region-newton/blob/34f8e4ecaf10a37179aa71483e00fe8a6c7db98d/main.cpp#L272-L283).
+To implement our adaptive eigenvalue projection strategy, we [compute the trust region ratio](https://github.com/honglin-c/trust-region-newton/blob/15a306fbbea61cf178cf6c0be45410fdbab9c394/main.cpp#L316) and [use it as a threshold to switch between the abs and clamp strategy](https://github.com/honglin-c/trust-region-newton/blob/15a306fbbea61cf178cf6c0be45410fdbab9c394/main.cpp#L274).
 
 </details>
 
